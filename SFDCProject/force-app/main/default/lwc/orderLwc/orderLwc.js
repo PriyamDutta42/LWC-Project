@@ -90,13 +90,19 @@ export default class OrderLwc extends LightningElement {
     searchProducts(event) {
       //  var opts = document.querySelector('input[name="searchOps"]:checked').value;
             var searchValue = event.target.value;
+            console.log(this.value);
             if (searchValue.length > 0) {
             getProducts({ searchBy: this.value , searchText: searchValue, pbId: '01s2w000004xwQ5AAI' })
                 .then(result => {
+                    console.log(result);
+                    console.log('inside get products success 1');
                     this.productList = JSON.parse(result);
+                    console.log('inside get products success 2');
                     this.displayList = true;
+                    console.log(this.productList);
                 })
                 .catch(error => {
+                    console.log('inside get products error');
                     this.error = error;
                 });
             
@@ -177,24 +183,11 @@ export default class OrderLwc extends LightningElement {
     saveOrderProducts(event) {
         this.selectedItems = false;
         for (var product of this.selectedProductsList) {
-            var selectedProduct = new Object();
-            if (product.Quantity > 10) {
-                selectedProduct.Id = product.Id;
-                selectedProduct.Name = product.Name;
-                selectedProduct.ProductCode = product.ProductCode;
-                selectedProduct.Brand = product.Brand__c;
-                selectedProduct.Stock_Quantity = product.Stock_Quantity__c;
-                selectedProduct.Quantity = '1';
-                selectedProduct.ListPrice = 0;
-                selectedProduct.UnitPrice = 0;
-                selectedProduct.Discount = 100;
-                selectedProduct.PriceBookEntryId = product.PriceBookEntryId;
-                this.selectedProductsList.push(selectedproduct);
-            }
+           
             product.UnitPrice = product.ListPrice - (product.ListPrice * product.Discount / 100);
         }
 
-    createOrderProducts({ selectedProducts: JSON.stringify(this.selectedProductsList), priceBookId: '01s2w000004xwQ5AAI', orderId: this.recordId })
+        createOrderProducts({ selectedProducts: JSON.stringify(this.selectedProductsList), priceBookId: '01s2w000004xwQ5AAI', orderId: this.recordId })
             .then(result => {
                 console.log('Order Id : ' + result);
             })
@@ -210,16 +203,6 @@ export default class OrderLwc extends LightningElement {
         });
         this.dispatchEvent(event);
     }
-    }
-
-    cancelOrders(event){
-        for (var product of this.selectedProductsList) {
-                            const index = this.selectedProductsList.indexOf(product);
-                this.selectedProductsList.splice(index, 1)
-            }
-        
-        this.selectedItems = false;
-        this.selectedItems = true;
     }
 
         @api
