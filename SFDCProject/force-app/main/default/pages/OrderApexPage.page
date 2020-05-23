@@ -1,0 +1,5 @@
+<apex:page standardController="Order" extensions="OrderApexPageController">
+    <apex:pageBlock >
+        <apex:outputtext value="Hello! {!message}"/>
+    </apex:pageBlock>
+</apex:page>

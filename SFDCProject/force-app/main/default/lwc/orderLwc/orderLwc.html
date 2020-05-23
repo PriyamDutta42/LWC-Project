@@ -1,0 +1,275 @@
+<template>
+    <div>
+        <lightning-card icon-name='custom:custom14' title='Create an Order' class='slds-card small'>
+        <lightning-record-edit-form object-api-name="Order" id="createOrderForm" onsuccess={handleSuccess}>
+            <div class="slds-grid">
+                <div class="slds-col slds-size_1-of-3">
+                    <lightning-input-field field-name="AccountId"></lightning-input-field>
+                </div>
+                <div class="slds-col slds-size_1-of-3">
+                    <lightning-input-field field-name="EffectiveDate"></lightning-input-field>
+                </div>
+            </div>
+            <div class="slds-grid">
+                <div class="slds-col slds-size_1-of-3">
+                    <lightning-input-field field-name="Status"></lightning-input-field>
+                </div>
+            </div>
+            <lightning-button variant="brand" type="submit" label="Create Order"></lightning-button>
+            &nbsp;&nbsp;
+            <lightning-button variant="brand" onclick={reset} label="Reset"></lightning-button>
+        </lightning-record-edit-form>
+        </lightning-card>
+    </div>
+
+    <lightning-card icon-name='custom:custom14' title='Search For Products' class='slds-card small'>
+    <div class="slds-m-around_medium">
+        <lightning-radio-group name="searchOps" label="Search Category" options={options} value={value}
+            type="radio" onchange={radioChange}></lightning-radio-group>
+        <div class="slds-m-bottom_small">
+            <lightning-input type="text" label="Search Products Here" onkeypress={searchProducts}>
+            </lightning-input>
+        </div>
+    </div>
+    </lightning-card>
+
+
+    <template if:true={displayList}>
+        <div>
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th class="" scope="col">
+                            <div class="slds-truncate">Product Code</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate">Product Name</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate">Brand</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate">MRP</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate">In Stock</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate">Action</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                
+                <template if:true={productList}>
+                    <template for:each={productList} for:item="product">
+                            <tr class="slds-hint-parent" key={product.Id}>
+                                <td>
+                                    <div class="slds-truncate">{product.ProductCode}</div>
+                                </td>
+                                <td>
+                                    <div class="slds-truncate">{product.Name}</div>
+                                </td>
+                                <td>
+                                    <div class="slds-truncate">{product.Brand__c}</div>
+                                </td>
+                                <td>
+                                    <div class="slds-truncate">{product.ListPrice}</div>
+                                </td>
+                                <td>
+                                    <div class="slds-truncate">{product.Stock_Quantity__c}</div>
+                                </td>
+                                <td>
+                                    <div class="slds-truncate">
+                                        <lightning-button label="Add Item" variant="brand" value={product.Id}
+                                            onclick={addProduct}>
+                                        </lightning-button>
+                                    </div>
+                                </td>
+                            </tr>
+                    </template>
+        </template>
+</tbody>
+</table>
+</div>
+</template>
+<br/><br/>
+
+<h1>Selected Products List</h1><br/>
+<template if:true={selectedItems}>
+        <div>
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                <thead>
+                   <tr class="slds-line-height_reset">
+                      <th class="" scope="col">
+                         <div class="slds-truncate">Product Code</div>
+                      </th>
+                      <th class="" scope="col">
+                         <div class="slds-truncate">Product Name</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate">Brand</div>
+                     </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate">Stock Quantity</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">Quantity</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">Discount(%)</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">Action</div>
+                     </th>
+                   </tr>
+                </thead>
+                <tbody>    
+                   <template if:true={selectedProductsList}>
+                    <template for:each={selectedProductsList} for:item="product">
+                        <tr class="slds-hint-parent" key={product.Id}>
+                            <td>
+                                <div class="slds-truncate">{product.ProductCode}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.Name}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.Brand__c}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.Stock_Quantity__c}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate"><lightning-input type="number" min="1" max={product.Stock_Quantity__c} variant="label-hidden" name={product.Id} value={product.Quantity} onchange={updateQuantity} required></lightning-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate"><lightning-input type="number" min="0" max="100" variant="label-hidden" name={product.Id} value={product.Discount} onchange={updateDiscount} required></lightning-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate"><lightning-button label="Remove" variant="brand" value={product.Id} onclick={removeProduct}></lightning-button>
+                                </div>
+                            </td>
+                        </tr>
+                     </template>
+</template>
+</tbody>
+</table>
+</div>
+</template>
+
+<br/><br/>
+<lightning-button variant="brand" label="Confirm Order" onclick={saveOrderProducts} class="slds-m-left_x-small"></lightning-button>
+&nbsp;
+<lightning-button variant="brand" label="Cancel Order" onclick={cancelOrder} class="slds-m-left_x-small"></lightning-button>
+
+<br><br>
+<lightning-card icon-name='custom:custom14' title='Added Products' class='slds-card small'>
+<template if:true={summary}>
+        <div>
+        
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                <thead>
+                   <tr class="slds-line-height_reset">
+                      <th class="" scope="col">
+                         <div class="slds-truncate">Product Code</div>
+                      </th>
+                      <th class="" scope="col">
+                         <div class="slds-truncate">Product Name</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate">Brand</div>
+                     </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate">Stock Quantity</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">Quantity</div>
+                     </th>
+                     <th class="" scope="col">
+                        <div class="slds-truncate">Discount(%)</div>
+                     </th>
+                   </tr>
+                </thead>
+                <tbody>   
+                   <template if:true={selectedProductsList}>
+                    <template for:each={selectedProductsList} for:item="product">
+                        <tr class="slds-hint-parent" key={product.Id}>
+                            <td>
+                                <div class="slds-truncate">{product.ProductCode}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.Name}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate ">{product.Brand__c}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">{product.Stock_Quantity__c}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate"><lightning-input type="number" min="1" max={Stock_Quantity__c} variant="label-hidden" name={product.Id} value={product.Quantity} disabled></lightning-input>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate"><lightning-input type="number" min="0" max="100" variant="label-inline" name={product.Id} value={product.Discount} disabled></lightning-input>
+                                </div>
+                            </td>
+                        </tr>
+                     </template>
+</template>
+</tbody>
+</table>
+</div>
+</template>
+</lightning-card>
+<lightning-card icon-name='custom:custom16' title='Order Summary' class='slds-card small'>
+    <lightning-button variant="brand" onclick={changeModal} label="Generate Summary"></lightning-button>
+    <template if:true={showModal}>
+        
+      <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+          <div class="slds-modal__container">
+            <header class="slds-modal__header">
+              
+              <lightning-button-icon icon-name="utility:close" class="slds-float_right" onclick={closeModal} alternative-text="close"></lightning-button-icon>
+              <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate"></h2>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                
+                Order Details:
+
+                <template for:each={data} for:item='d'>
+                    <p key={d.Id}>
+                        Order ID: {d.Id} &nbsp;&nbsp;
+                        Order Amount : {d.TotalAmount} &nbsp;&nbsp;
+                        Total Order Quantity : {d.TotalQty__c}
+                    </p>
+                </template>
+                <br></br>
+                
+                Product Details:
+
+                <template for:each={data2} for:item='d2'>
+                    <p key={d2.Id}>
+                         Product Name : {d2.Product2.Name} &nbsp;&nbsp;
+                        Product Brand : {d2.Product2.Brand__c} &nbsp;&nbsp;
+                        Stock Quantity : {d2.Product2.Stock_Quantity__c} &nbsp;&nbsp;
+                        Quantity : {d2.Quantity}
+                       <!-- {d2.Quantity}-->
+                    </p>
+                </template>
+
+            </div>
+            <footer class="slds-modal__footer">
+              <!-- <lightning-button variant="neutral" label="Close" title="Close" onclick={closeModal}
+                  class="slds-m-left_x-small"></lightning-button> -->
+            </footer>
+          </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+      </template>
+</lightning-card>
+<br/><br/>
+</template>
